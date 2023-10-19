@@ -96,7 +96,7 @@ class TenthFrame(Frame):
                 self.extra_roll = Roll(pins)
             else:
                 raise IndexError("Can't throw bonus roll with an open tenth frame")
-        else:
+        elif len(self.rolls) == 2 and self.extra_roll is not None:
             raise IndexError("Can't add more than three rolls to the tenth frame")
 
     def score(self) -> int:
@@ -150,5 +150,7 @@ class Game:
     def score(self) -> int:
         if self.current_frame_index < Game.MAX_FRAMES - 1:
             raise IndexError("There are not enough frames to calculate score")
+        if self.frames[-1].is_complete():
+            self.score += self.frames[-1].score()
 
-        return sum(frame.score() for frame in self.frames)
+        return self.score

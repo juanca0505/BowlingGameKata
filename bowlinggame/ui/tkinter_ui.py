@@ -1,4 +1,4 @@
-from tkinter import Tk, Frame, Label, Entry, messagebox
+from tkinter import Tk, Frame, Label, Entry, messagebox, filedialog
 from tkinter.constants import TOP, X, SOLID, W, LEFT, END
 from tkinter.ttk import Button
 from customtkinter import CTk
@@ -128,7 +128,25 @@ class BowlingApp(CTk):
             self.add_roll_entry.focus()
 
     def load_from_file(self):
-        pass
+        file_path = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
+
+        if not file_path:
+            return
+
+        try:
+            with open(file_path, 'r') as file:
+                rolls_str = file.read().strip()
+                rolls = rolls_str.split()
+                for roll in rolls:
+                    if roll == 'X':
+                        self.game.roll(10)
+                    elif roll == '/':
+                        self.game.roll(10 - self.game.frames[self.game.current_frame_index].rolls[0])
+                    else:
+                        self.game.roll(int(roll))
+                self.update_frames()
+        except Exception as e:
+            messagebox.showerror("Error", f"Error loading file: {str(e)}")
 
     def update_frames(self):
         for i, frame in enumerate(self.game.frames):
